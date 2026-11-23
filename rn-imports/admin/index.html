@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Painel administrativo demonstrativo da VitraFlow">
+  <title>Visão geral | VitraFlow</title>
+  <link rel="icon" href="../assets/icons/vitraflow-symbol.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;700&family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+  <script type="module" src="admin.js"></script>
+</head>
+<body>
+  <a class="skip" href="#content">Ir para o conteúdo</a>
+  <div class="shell">
+    <div class="sidebar">
+      <a class="wordmark" href="#overview"><img src="../assets/images/vitraflow-logo.png" alt="VitraFlow" width="778" height="264"></a>
+      <nav id="navigation" aria-label="Administração"></nav>
+      <div class="sidebar-foot"><span class="environment-dot"></span> Ambiente demonstrativo</div>
+    </div>
+    <div class="workspace">
+      <header class="topbar">
+        <div class="topbar-title"><span id="page-label">Visão geral</span></div>
+        <div class="account">
+          <details class="header-notifications" id="header-notifications">
+            <summary class="icon-button" id="notification-toggle" aria-label="Notificações">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 12a2 2 0 0 0 4 0"/></svg>
+              <span class="notification-count" id="notification-count" aria-hidden="true" hidden></span>
+            </summary>
+            <section class="notification-panel" aria-labelledby="notification-title">
+              <div class="notification-heading"><h2 id="notification-title">Notificações</h2><button class="button compact" id="clear-notifications" type="button" hidden>Limpar</button></div>
+              <div id="notification-list"></div>
+            </section>
+          </details>
+          <a class="avatar" id="profile-link" href="#profile" aria-label="Meu perfil">AV</a>
+        </div>
+      </header>
+      <main id="content" tabindex="-1"></main>
+    </div>
+  </div>
+  <div id="notice" class="toast" role="status" hidden></div>
+  <dialog id="confirmation" aria-labelledby="confirmation-title" aria-describedby="confirmation-copy"><form method="dialog">
+    <h2 id="confirmation-title"></h2><p id="confirmation-copy"></p>
+    <div class="actions"><button class="button" value="cancel" autofocus>Cancelar</button><button class="button danger" value="confirm" id="confirmation-action">Confirmar</button></div>
+  </form></dialog>
+</body>
+</html>

@@ -1,0 +1,308 @@
+/* Progressive enhancements: the base styles target phones from 360px. */
+@media (min-width: 390px) {
+  .banner-copy h1 { font-size: 36px; max-width: 225px; }
+  .store-banner { min-height: 245px; }
+  .banner-art { width: 55%; }
+  .sneaker-row > a { gap: 20px; }
+}
+
+@media (min-width: 600px) {
+  .container, .header-inner { width: calc(100% - 56px); }
+  .store-banner { min-height: 290px; }
+  .banner-copy { padding: 34px; width: 66%; }
+  .banner-copy h1 { max-width: 420px; font-size: 43px; }
+  .banner-copy p { display: block; font-size: 13px; margin-bottom: 10px; color: var(--muted); }
+  .banner-art { inset: 0 0 0 auto; width: 48%; }
+  .banner-art img { transform: rotate(-10deg) scale(1.14); }
+  .banner-image-note { right: 22px; bottom: 15px; }
+  .store-profile { grid-template-columns: 72px minmax(0, 1fr) auto; padding-block: 28px; gap: 20px; }
+  .store-monogram { width: 72px; height: 74px; font-size: 34px; }
+  .store-info-link { grid-column: 3; grid-row: 1; }
+  .store-profile h2 { font-size: 28px; }
+  .product-rail { grid-auto-columns: 42%; }
+  .rail-controls { display: flex; }
+  .sneaker-row > a { grid-template-columns: minmax(0, 1fr) 190px; padding-block: 26px; gap: 35px; }
+  .sneaker-row h3 { font-size: 20px; }
+  .row-description { font-size: 13px; }
+  .row-sizes { font-size: 11px; }
+  .price { font-size: 16px; }
+  .purchase-dock { padding-inline: 28px; }
+  .purchase-buttons { max-width: 700px; margin-inline: auto; }
+  .purchase-summary { max-width: 700px; margin-inline: auto; }
+  .bag-item { grid-template-columns: 125px minmax(0, 1fr); gap: 24px; }
+  .bag-item h2 { font-size: 20px; }
+}
+
+@media (min-width: 768px) {
+  .home-page .store-profile,
+  .home-page .discovery-bar { display: none; }
+  html { scroll-padding-top: 155px; scroll-padding-bottom: 24px; }
+  body, .has-purchase-dock { padding-bottom: 0; }
+  .announcement { padding: 10px 15px; font-size: 9px; }
+  .announcement span { display: inline; opacity: .65; margin-left: 24px; letter-spacing: .5px; }
+  .header-inner { display: flex; height: 90px; }
+  .desktop-nav { display: flex; gap: 28px; font-size: 12px; }
+  .desktop-nav a { padding: 14px 0; position: relative; }
+  .desktop-nav a[aria-current] { border-bottom: 1px solid; }
+  .desktop-nav .nav-icon, .desktop-nav .bag-count, .mobile-nav { display: none; }
+  .home-content .section-head h2 { font-size: 30px; }
+  .store-profile { padding-block: 30px; }
+  .discovery-inner { padding-block: 16px 0; }
+  .home-search { max-width: 740px; }
+  .category-chips { gap: 10px; }
+  .category-chip { padding-inline: 23px; }
+  .discovery-status { min-height: 58px; }
+  .collection { padding-block: 20px 35px; }
+  .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 20px; }
+  .product-brand span { display: inline; font-size: 9px; }
+  .product-rail { grid-auto-columns: 31%; }
+  .explore-section { padding-top: 35px; }
+  .explore-section .text-link { font-size: 12px; }
+  .catalog-cta { padding-block: 70px 45px; }
+  .catalog-cta h2 { font-size: 40px; }
+  .page-title { display: flex; align-items: end; justify-content: space-between; gap: 25px; margin-bottom: 35px; }
+  .page-title h1 { font-size: 44px; margin-bottom: 0; }
+  .page-section { padding-top: 20px; }
+  .filters { grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 24px; }
+  .filters input, .filters select { font-size: 13px; }
+  .product-layout { grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  .product-info h1 { font-size: 35px; }
+  .gallery { position: sticky; top: 24px; }
+  .main-image { aspect-ratio: 1; }
+  .purchase-dock { position: static; padding: 22px 0 0; border: 0; }
+  .purchase-summary { margin-bottom: 18px; }
+  .purchase-summary > div { flex-direction: column; gap: 3px; }
+  .purchase-buttons { grid-template-columns: minmax(0, 1fr); }
+  .purchase-buttons .button { min-height: 50px; font-size: 13px; }
+  .bag-checkout-dock { display: none; }
+  .bag-summary > .button { display: flex; margin-block: 10px 20px; }
+  .bag-layout { grid-template-columns: minmax(0, 1.3fr) minmax(260px, 1fr); gap: 28px; }
+  .bag-item { grid-template-columns: 95px minmax(0, 1fr); gap: 18px; }
+  .bag-summary { position: sticky; top: 24px; }
+  #toast, .has-purchase-dock #toast { bottom: 25px; }
+  .about-hero { grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  .about-art { min-height: 420px; }
+  .about-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin-block: 65px; }
+  .about-grid h2 { font-size: 25px; }
+  .site-footer { display: block; background: #f7f7f6; border-top: 1px solid var(--line); margin-top: 64px; }
+  dialog { inset: 0; margin: auto; border-radius: 20px; padding: 30px; width: min(560px, calc(100% - 48px)); max-height: 88dvh; box-shadow: 0 25px 70px #0002; }
+  dialog h2 { font-size: 33px; }
+  .dialog-handle { display: none; }
+  .confirm-item img { width: 88px; }
+  .confirm-items { max-height: 34dvh; }
+}
+
+@media (min-width: 1024px) {
+  .container, .header-inner { width: calc(100% - 96px); }
+  .store-banner { min-height: 330px; }
+  .banner-copy { padding: 40px 45px; }
+  .banner-copy h1 { max-width: 560px; font-size: 57px; margin-top: 20px; }
+  .banner-copy p { font-size: 14px; }
+  .banner-art { width: 48%; }
+  .banner-art img { transform: rotate(-9deg) scale(1.05); }
+  .banner-edition { display: block; position: absolute; top: 24px; right: 28px; font-size: 10px; letter-spacing: 2px; color: #777; }
+  .store-profile { grid-template-columns: 80px minmax(0, 1fr) auto; }
+  .store-monogram { width: 80px; height: 80px; font-size: 39px; }
+  .store-profile p { font-size: 13px; }
+  .service-label { font-size: 11px; }
+  .product-rail { grid-auto-columns: 28%; }
+  .product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .sneaker-list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 42px; }
+  .sneaker-row > a { grid-template-columns: minmax(0, 1fr) 155px; gap: 20px; }
+  .sneaker-row h3 { font-size: 18px; }
+  .sneaker-row .price { font-size: 16px; }
+  .filters { grid-template-columns: 1.7fr repeat(4, minmax(0, 1fr)); }
+  .search-field { grid-column: auto; }
+  .product-layout { grid-template-columns: 1.1fr 1fr; gap: 60px; }
+  .product-info h1 { font-size: 45px; }
+  .selection-panel { padding: 22px; }
+  .purchase-buttons { grid-template-columns: 1fr 1fr; }
+  .bag-layout { grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 50px; }
+  .bag-item { grid-template-columns: 135px minmax(0, 1fr); gap: 24px; }
+  .bag-summary { padding: 30px; }
+  .about-hero h1 { font-size: 58px; }
+}
+
+/* Full-width mobile cover; retain the original height and composition. */
+@media (max-width: 767px) {
+  .store-banner { width: 100%; border-radius: 0; }
+  .home-page .store-profile { width: 100%; margin-top: -36px; padding: 24px 18px 18px; border-radius: 40px 40px 0 0; background: white; z-index: 3; }
+  .banner-search { display: grid; place-items: center; position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; background: white; z-index: 4; }
+  .home-page .discovery-bar { top: 4px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}
+
+/* VitraFlow shared visual language. Wordmark is provisional until original artwork is supplied. */
+.logo { gap: 0; font-style: normal; letter-spacing: -1.5px; font-weight: 700; font-size: 29px; }
+.logo > .wordmark { width: auto; font: inherit; letter-spacing: inherit; white-space: nowrap; }
+.wordmark > span, .brand-initials > span { color: var(--color-primary); }
+.store-monogram { background: var(--ink); border-radius: 16px; color: white; font-style: normal; letter-spacing: -3px; }
+.store-monogram > .brand-initials { font-size: 27px; font-weight: 700; line-height: 1; letter-spacing: -3px; }
+.header-inner { display: flex; height: 74px; gap: 20px; }
+#header { background: var(--color-surface); border-bottom: 1px solid var(--line); }
+.announcement { font-size: 9px; letter-spacing: 1.8px; padding: 10px; }
+.announcement::before { content: '●'; color: var(--color-primary); margin-right: 9px; }
+.scroll-progress > span { background: var(--color-primary); }
+.bag-count { background: var(--color-primary); color: var(--ink); font-weight: 700; }
+.mobile-nav a[aria-current], .desktop-nav a[aria-current] { color: var(--color-primary); }
+.mobile-nav { background: var(--color-surface); box-shadow: 0 -8px 30px #0b0b0b06; }
+:focus-visible { outline-color: var(--color-primary); }
+.button { background: var(--color-primary); border-color: var(--color-primary); color: var(--ink); font-weight: 700; border-radius: 12px; }
+.button:hover:not(:disabled) { background: #ed6200; }
+.button.outline, .button.light { color: var(--ink); border-color: var(--ink); background: var(--color-surface); }
+.category-chip { font-size: 13px; font-weight: 500; }
+.category-chip[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: white; box-shadow: inset 0 -3px var(--color-primary); }
+.category-chip::before { content: '↗'; margin-right: 8px; color: var(--color-primary); }
+.home-search { background: var(--color-surface); border-color: var(--line); }
+.home-search:focus-within { box-shadow: 0 0 0 2px var(--color-primary); }
+.store-banner { background: var(--ink); color: white; margin-top: 18px; border-radius: 22px; isolation: isolate; min-height: 470px; }
+.store-banner .banner-copy { width: 100%; padding: 28px 24px; position: relative; z-index: 2; }
+.store-banner .banner-copy .eyebrow { font-size: 8px; color: #d9d9d9; letter-spacing: 1.5px; }
+.store-banner .banner-copy h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(43px, 8vw, 78px); letter-spacing: -.015em; line-height: 1.06; max-width: none; margin: 20px 0 14px; text-wrap: nowrap; }
+.banner-copy h1 > span { color: var(--color-primary); }
+.store-banner .banner-copy p { display: block; font-size: 12px; color: #d9d9d9; max-width: 270px; margin-bottom: 16px; }
+.banner-link { color: white; font-size: 12px; border-color: #ffffff60; }
+.store-banner .banner-art { width: 100%; inset: auto 0 0; height: 180px; z-index: 0; }
+.store-banner .banner-art > .sneaker-photo { width: 210px; height: 210px; right: 18px; bottom: -10px; border-radius: 50%; transform: rotate(-18deg); }
+.banner-art::before { content: ''; position: absolute; width: 220px; height: 220px; border: 1px solid #ff6a0060; border-radius: 50%; right: 8px; bottom: -15px; }
+.banner-search { display: none; }
+.banner-edition { display: block; position: absolute; bottom: 30px; left: 24px; top: auto; right: auto; color: #d9d9d9; font-size: 8px; letter-spacing: 1px; writing-mode: vertical-rl; }
+.home-page .store-profile { margin-top: 0; border-radius: 0; background: transparent; padding-block: 20px; }
+.home-page .discovery-bar { background: var(--paper); position: static; }
+.discovery-status { border-bottom: 1px solid var(--line); }
+.visual-label { color: var(--muted); }
+.collection { padding-block: 26px; }
+.product-card { background: var(--color-surface); border: 1px solid #e8e8e8; border-radius: 18px; overflow: hidden; }
+.product-card > a { padding: 9px 9px 18px; }
+.product-card h3, .product-card .product-brand, .product-card .price { margin-inline: 7px; }
+.product-card h3 { font-size: 15px; }
+.product-image { border-radius: 12px; }
+.tag { border: 1px solid #0b0b0b12; font-size: 8px; letter-spacing: .4px; }
+.card-arrow { background: var(--ink); color: white; }
+.price { font-weight: 700; }
+.edit-strip { background: var(--ink); border-left: 5px solid var(--color-primary); }
+.edit-strip h2, .catalog-cta h2, .store-description h2 { font-family: var(--font-display); font-weight: 400; letter-spacing: 0; }
+.edit-strip .eyebrow { color: #ff9c55; }
+.sneaker-list { gap: 12px; }
+.sneaker-row { border: 1px solid #e8e8e8; border-radius: 16px; background: var(--color-surface); }
+.sneaker-row > a { padding: 18px 14px; }
+.row-sizes { display: none; }
+.catalog-cta { margin-top: 28px; padding: 40px 20px; border: 1px solid var(--line); border-radius: 20px; background: var(--color-surface); }
+.page-section { padding-top: 24px; }
+.page-title h1 { letter-spacing: -.05em; }
+.bag-summary, .selection-panel, .store-information-card { background: var(--color-surface); border: 1px solid var(--line); }
+.bag-item { background: var(--color-surface); border: 1px solid #e8e8e8; border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+.title-count { background: var(--ink); color: var(--color-primary); }
+.total-line strong { font-size: 18px; }
+.size.selected { background: var(--ink); border-color: var(--color-primary); box-shadow: 0 0 0 1px var(--color-primary); }
+.thumb.selected { border-color: var(--color-primary); }
+.availability-dot { background: var(--color-primary); }
+.product-info h1 { font-weight: 700; }
+.site-footer { background: var(--color-surface); }
+.store-description { border-radius: 18px; background: var(--ink); color: white; padding: 30px 24px; }
+.store-description p { color: #d9d9d9; }
+@media (min-width: 768px) {
+  .header-inner { height: 88px; }
+  .desktop-nav { gap: 22px; }
+  .home-page .discovery-bar { display: block; }
+  .home-page .store-profile { display: none; }
+  .discovery-inner { display: grid; grid-template-columns: minmax(180px, 1fr) auto; gap: 18px; align-items: center; padding-block: 24px; }
+  .category-chips { padding-block: 4px; }
+  .category-chip { padding-inline: 13px; }
+  .store-banner { min-height: 390px; margin-top: 28px; }
+  .store-banner .banner-copy { width: 60%; padding: 42px 36px; }
+  .store-banner .banner-copy h1 { font-size: clamp(52px, 6vw, 78px); }
+  .store-banner .banner-copy p { font-size: 14px; max-width: 300px; }
+  .store-banner .banner-art { inset: 0 0 0 auto; width: 43%; height: 100%; }
+  .store-banner .banner-art > .sneaker-photo { width: 330px; height: 330px; right: -20px; bottom: 20px; }
+  .banner-art::before { width: 350px; height: 350px; right: -30px; bottom: 10px; }
+  .banner-edition { writing-mode: initial; left: auto; right: 24px; bottom: 18px; }
+  .product-rail { grid-auto-columns: 29%; }
+  .site-footer { margin-top: 64px; }
+}
+@media (min-width: 1024px) {
+  .store-banner { min-height: 450px; }
+  .store-banner .banner-copy { padding: 50px; }
+  .store-banner .banner-copy h1 { font-size: 80px; }
+  .store-banner .banner-art > .sneaker-photo { width: 430px; height: 430px; bottom: 0; right: 10px; }
+  .banner-art::before { width: 450px; height: 450px; bottom: -10px; right: 0; }
+  .product-rail { grid-auto-columns: calc((100% - 48px) / 4); }
+  .sneaker-list { column-gap: 20px; }
+}
+.mobile-nav a[aria-current]::before { background: var(--color-primary); }
+@media (min-width: 768px) and (max-width: 1023px) {
+  .discovery-inner { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .category-chips { justify-content: flex-start; }
+}
+
+/* Original brand artwork: preserve aspect ratio and PNG transparency. */
+.logo { flex-shrink: 0; }
+.logo .brand-logo { width: 176px; height: auto; display: block; }
+.store-monogram { background: var(--color-surface); flex-shrink: 0; }
+.store-monogram > img { width: 100%; height: 100%; object-fit: contain; }
+@media (min-width: 768px) {
+  .logo .brand-logo { width: 204px; }
+}
+
+/* Mobile home uses an edge-to-edge cover and bottom navigation. */
+@media (max-width: 767px) {
+  #header { display: none; }
+  .store-banner {
+    width: 100%;
+    max-width: none;
+    margin-top: 0;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .store-banner { min-height: 360px; }
+  .store-banner .banner-copy { padding: 22px 24px; }
+  .store-banner .banner-copy h1 { margin-block: 14px 10px; }
+  .store-banner .banner-art { height: 130px; }
+  .store-banner .banner-art > .sneaker-photo {
+    width: 160px;
+    height: 160px;
+    right: 18px;
+    bottom: -15px;
+  }
+  .banner-art::before {
+    width: 170px;
+    height: 170px;
+    right: 13px;
+    bottom: -20px;
+  }
+  .banner-edition { bottom: 18px; }
+}
+
+/* Rounded white surface connecting the cover to the store identity. */
+@media (max-width: 767px) {
+  .home-page .store-profile {
+    position: relative;
+    z-index: 3;
+    margin-top: -24px;
+    padding-top: 24px;
+    border-radius: 28px 28px 0 0;
+    background: var(--color-surface);
+  }
+}
+
+@media (max-width: 767px) {
+  .store-banner .banner-art > .sneaker-photo {
+    width: 185px;
+    height: 185px;
+    bottom: 12px;
+  }
+  .banner-art::before {
+    width: 195px;
+    height: 195px;
+    bottom: 7px;
+  }
+}
+
+@media (min-width: 768px) {
+  .home-page .discovery-bar { display: none; }
+}
