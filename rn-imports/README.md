@@ -16,6 +16,19 @@ python3 -m http.server 5500
 
 Acesse painel e vitrine pelo mesmo endereço e porta para que ambos leiam os mesmos dados do navegador. As fontes são carregadas pelo Google Fonts quando há conexão. As imagens iniciais são locais.
 
+## Publicar no Vercel
+
+Importe o repositório no Vercel com o **Root Directory** apontando para a raiz do repositório. O arquivo `vercel.json` configura o preset **Other**, desativa instalação e build e publica os arquivos de `rn-imports`. O projeto não usa variáveis de ambiente.
+
+| Área | Caminhos no domínio do deploy |
+| --- | --- |
+| Vitrine | `/`, `/catalogo.html`, `/produto.html?id=produto-1`, `/sacola.html`, `/sobre.html` |
+| Administração | `/admin/index.html` (ou `/admin`) |
+| Telas do painel | Acrescente `#overview`, `#products`, `#products/new`, `#products/produto-1`, `#stock`, `#finance`, `#appearance`, `#settings` ou `#profile` à URL do painel |
+| Entrar e criar conta | `/admin/login.html` |
+
+O login é demonstrativo. Produtos, vendas e ajustes feitos no servidor local ficam no navegador e no endereço em que foram criados. O domínio do Vercel começa com os dados iniciais do protótipo.
+
 ## Dados demonstrativos
 
 `js/mock-data.js` reúne o catálogo inicial e as configurações da vitrine. `js/store.js` centraliza a validação, a leitura e a escrita em LocalStorage. O painel atualiza o catálogo e a vitrine usa as mesmas configurações e os mesmos produtos ativos. O painel mantém suas próprias cores e fontes.
