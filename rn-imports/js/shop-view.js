@@ -1,4 +1,4 @@
-import { categories, studio } from './mock-data.js';
+import { categories, storeLogo } from './mock-data.js';
 import { escape, imageURL, money, price, primaryImage, total } from './store.js';
 
 export const available = products => products.filter(product => product.active);
@@ -16,8 +16,7 @@ export function collection(products, id) {
 }
 
 export function photo(image, alt = '', lazy = true) {
-  const tiled = image.src === studio && Number.isInteger(image.tile) && image.tile >= 0 && image.tile < 6;
-  return `<div class="sneaker-photo ${tiled ? `photo-${image.tile}` : 'shop-photo-single'}"><img src="${escape(imageURL(image.src) || imageURL(studio))}" alt="${escape(alt)}"${lazy ? ' loading="lazy"' : ''}></div>`;
+  return `<div class="sneaker-photo shop-photo-single"><img src="${escape(imageURL(image.src) || imageURL(storeLogo))}" alt="${escape(alt)}"${lazy ? ' loading="lazy"' : ''}></div>`;
 }
 
 export function priceLabel(product) {
@@ -26,10 +25,10 @@ export function priceLabel(product) {
 
 export const productURL = product => `produto.html?id=${encodeURIComponent(product.id)}`;
 
-export function card(product) {
+export function card(product, label = 'DISPONÍVEL') {
   const out = total(product) === 0;
-  const content = `<div class="product-image">${photo(primaryImage(product), product.name)}<span class="tag ${out ? 'sold' : ''}">${out ? 'ESGOTADO' : product.promo != null ? 'OFERTA' : 'DISPONÍVEL'}</span><span class="card-arrow" aria-hidden="true">↗</span></div>
-    <div class="product-brand">${escape(product.brand)}<span>${escape(product.category === 'Sneakers' ? 'Lifestyle' : product.category)}</span></div>
+  const content = `<div class="product-image">${photo(primaryImage(product), product.name)}<span class="tag ${out ? 'sold' : ''}">${out ? 'ESGOTADO' : product.promo != null ? 'OFERTA' : label}</span><span class="card-arrow" aria-hidden="true">↗</span></div>
+    <div class="product-brand">${escape(product.brand)}<span>${escape(product.category === 'Tênis' ? 'Lifestyle' : product.category)}</span></div>
     <h3>${escape(product.name)}</h3><p class="price">${priceLabel(product)}</p>`;
   return `<article class="product-card ${out ? 'is-unavailable' : ''}"><a href="${productURL(product)}">${content}</a></article>`;
 }

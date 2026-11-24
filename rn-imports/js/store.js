@@ -1,4 +1,4 @@
-import { originalAppearance, seedProducts, sections, studio, fonts, themes } from './mock-data.js';
+import { audiences, originalAppearance, seedProducts, sections, storeLogo, fonts, themes } from './mock-data.js';
 
 export const storageKey = 'vitraflow-demo-v1';
 const root = new URL('../', import.meta.url);
@@ -18,7 +18,7 @@ export function stockAlerts({ products, threshold }) {
 }
 
 export const price = product => product.promo ?? product.price;
-export const primaryImage = product => product.images[0] || { src: studio, tile: 0 };
+export const primaryImage = product => product.images[0] || { src: storeLogo };
 export const normalize = value => value.trim().normalize('NFKC').toLocaleLowerCase('pt-BR');
 const integer = value => Number.isSafeInteger(value) && value >= 0;
 const validPrice = value => Number.isFinite(value) && value >= 0;
@@ -58,18 +58,21 @@ export function readStore() {
   try {
     const stored = JSON.parse(localStorage.getItem(storageKey));
     if (!stored || typeof stored !== 'object') return initial;
-    if (Array.isArray(stored.products)) {
+    if (stored.productsChanged === true && Array.isArray(stored.products)) {
       const products = [];
       const ids = new Set();
+      const seedAudiences = new Map(seedProducts.map(({ id, audience }) => [id, audience]));
       for (const item of stored.products) {
         if (!item || typeof item.id !== 'string' || ids.has(item.id) || productError(item, products)) continue;
         ids.add(item.id);
         products.push({
-          ...item, category: typeof item.category === 'string' && item.category ? item.category : 'Sneakers',
+          ...item,
+          category: typeof item.category === 'string' && item.category.trim() && item.category !== 'Sneakers' ? item.category.trim() : 'Tênis',
+          audience: audiences.includes(item.audience) ? item.audience : (seedAudiences.get(item.id) ?? 'Unissex'),
           description: typeof item.description === 'string' ? item.description : '',
           createdAt: typeof item.createdAt === 'string' ? item.createdAt : '',
           active: item.active !== false,
-          images: Array.isArray(item.images) ? item.images.filter(image => imageURL(image?.src)) : []
+          images: Array.isArray(item.images) ? item.images.filter(image => imageURL(image?.src) && !image.src.endsWith("/sneakers-studio.png")) : []
         });
       }
       if (products.length || !stored.products.length) initial.products = products;
@@ -101,6 +104,8 @@ export function readStore() {
       for (const key of Object.keys(clean)) {
         if (typeof stored.appearance[key] === typeof clean[key] && typeof clean[key] !== 'object') clean[key] = stored.appearance[key];
       }
+      if (clean.logo === 'assets/images/vitraflow-logo.png') clean.logo = originalAppearance.logo;
+      if (clean.cover === 'assets/images/sneakers-studio.png') clean.cover = originalAppearance.cover;
       for (const key of Object.keys(clean.colors)) {
         const value = stored.appearance.colors?.[key];
         if (hex(value)) clean.colors[key] = value;

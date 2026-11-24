@@ -1,5 +1,5 @@
-import { originalAppearance, sections, studio } from './mock-data.js';
-import { appearanceVariables, escape as e, imageURL, money, price, primaryImage, readStore, storageKey, total } from './store.js';
+import { originalAppearance } from './mock-data.js';
+import { appearanceVariables, escape as e, imageURL, money, normalize, price, primaryImage, readStore, storageKey, total } from './store.js';
 import { available, card, categoriesFor, collection, photo, priceLabel, productURL } from './shop-view.js';
 
 const state = readStore();
@@ -12,36 +12,48 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const setText = (selector, value) => { const element = $(selector); if (element) element.textContent = value; };
 const empty = '<p class="shop-empty">Nenhum produto nesta seção.</p>';
 
-function cards(target, products) {
-  target.innerHTML = products.length ? products.map(product => card(product)).join('') : empty;
+function cards(target, products, label) {
+  target.innerHTML = products.length ? products.map(product => card(product, label)).join('') : empty;
 }
 
-function linkOriginalCards() {
-  document.querySelectorAll('.product-card, .sneaker-row').forEach(item => {
-    const name = $('h3', item)?.textContent;
-    const product = productList.find(record => record.name === name);
-    if (product) $('a', item).href = productURL(product);
-  });
+function productDiscovery(search, update) {
+  const buttons = [...document.querySelectorAll('[data-audience]')];
+  function refresh() {
+    const audience = buttons.find(button => button.getAttribute('aria-pressed') === 'true').dataset.audience;
+    const query = normalize(search.value);
+    update(productList.filter(product =>
+      (!audience || product.audience === audience || product.audience === 'Unissex') &&
+      normalize(`${product.name} ${product.brand} ${product.category}`).includes(query)));
+  }
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      for (const option of buttons) option.setAttribute('aria-pressed', String(option === button));
+      refresh();
+    });
+  }
+  search.addEventListener('input', refresh);
+  refresh();
+  return refresh;
 }
 
-function categoryChips() {
-  const categories = categoriesFor(productList);
-  document.querySelectorAll('.category-chips').forEach(nav => {
-    const buttons = [...nav.querySelectorAll('[data-category]')];
-    const existing = new Set(buttons.map(button => button.textContent.trim()));
-    for (const category of categories) {
-      if (existing.has(category)) continue;
-      const button = buttons[0].cloneNode(false);
-      button.textContent = category;
-      button.setAttribute('aria-pressed', 'false');
-      nav.insertBefore(button, buttons.at(-1));
-    }
+function homeProducts() {
+  const bestsellers = $('#bestsellers');
+  const launches = $('#new-products');
+  const list = $('.sneaker-list');
+  const offers = $('#home-offers .product-grid');
+  productDiscovery($('#home-search'), products => {
+    cards(bestsellers, collection(products, 'bestsellers'), 'MAIS VENDIDO');
+    cards(launches, collection(products, 'launches'), 'NOVA SELEÇÃO');
+    list.innerHTML = products.length ? collection(products, 'explore').map(row).join('') : empty;
+    if (offers) cards(offers, collection(products, 'offers'));
+    bestsellers.scrollLeft = launches.scrollLeft = 0;
+    document.dispatchEvent(new Event('vitraflow:products-filtered'));
   });
 }
 
 function row(product) {
   return `<article class="sneaker-row ${total(product) ? '' : 'is-unavailable'}"><a href="${productURL(product)}">
-    <div class="sneaker-row-copy"><span class="eyebrow">${e(product.brand)} / ${e(product.category === 'Sneakers' ? 'LIFESTYLE' : product.category)}</span>
+    <div class="sneaker-row-copy"><span class="eyebrow">${e(product.brand)} / ${e(product.category === 'Tênis' ? 'LIFESTYLE' : product.category)}</span>
       <h3>${e(product.name)}</h3><p class="row-description">${e(product.description)}</p>
       <p class="row-sizes">${product.variants.length ? `BR ${product.variants.map(item => e(item.size)).join(' · ')}` : 'Sem numerações'}</p>
       <p class="price">${priceLabel(product)}</p></div>
@@ -54,11 +66,6 @@ function home(customized) {
     bestsellers: $('#bestsellers')?.closest('section'), launches: $('#new-products')?.closest('section'),
     explore: $('#explore')
   };
-  if (state.productsChanged) {
-    cards($('#bestsellers'), collection(productList, 'bestsellers'));
-    cards($('#new-products'), collection(productList, 'launches'));
-    $('.sneaker-list').innerHTML = productList.length ? collection(productList, 'explore').map(row).join('') : empty;
-  }
   if (!customized) return;
   const banner = targets.banner;
   const title = $('#store-banner-title');
@@ -85,7 +92,7 @@ function home(customized) {
     $('.banner-search').href = 'catalogo.html';
     $('.banner-search').setAttribute('aria-label', 'Ver catálogo');
   }
-  const desktop = imageURL(appearance.bannerImage || (appearance.cover !== studio ? appearance.cover : ''));
+  const desktop = imageURL(appearance.bannerImage || (appearance.cover !== originalAppearance.cover ? appearance.cover : ''));
   const mobile = imageURL(appearance.mobileCover);
   if (desktop || mobile || !appearance.cover) {
     banner.classList.add(desktop || !appearance.cover ? 'shop-custom-cover' : 'shop-mobile-cover');
@@ -94,16 +101,13 @@ function home(customized) {
       <img src="${e(desktop || mobile)}" alt=""></picture>`);
   }
   const offerSection = document.createElement('section');
+  offerSection.id = 'home-offers';
   offerSection.className = 'collection';
   offerSection.innerHTML = '<div class="section-head"><h2>Ofertas</h2></div><div class="product-grid"></div>';
-  cards($('.product-grid', offerSection), collection(productList, 'offers'));
   targets.offers = offerSection;
   const explore = targets.explore;
   if (appearance.sections.find(item => item.id === 'offers').enabled) explore.before(offerSection);
   const originalOrder = originalAppearance.sections.map(item => item.id).join(',');
-  if (JSON.stringify(appearance.sections) !== JSON.stringify(originalAppearance.sections)) {
-    targets.categories.classList.add('shop-configured-categories');
-  }
   if (appearance.sections.map(item => item.id).join(',') !== originalOrder) {
     const main = $('#main');
     const layout = document.createElement('div');
@@ -128,10 +132,34 @@ function home(customized) {
 }
 
 function catalog() {
-  if (!state.productsChanged) return;
-  cards($('.product-grid'), productList);
+  const panel = $('#catalog-filters');
+  const toggle = $('.filter-button');
+  const category = $('[name="category"]', panel);
+  const brand = $('[name="brand"]', panel);
+  const size = $('[name="size"]', panel);
+  const grid = $('.product-grid');
   const count = $('.results-bar > span');
-  count.textContent = `${productList.length} ${productList.length === 1 ? 'produto' : 'produtos'} · seleção ilustrativa`;
+  const sorted = values => [...new Set(values)].sort((a, b) => a.localeCompare(b, 'pt-BR', { numeric: true }));
+  for (const [select, values] of [
+    [category, categoriesFor(productList)],
+    [brand, sorted(productList.map(product => product.brand))],
+    [size, sorted(productList.flatMap(product => product.variants.map(variant => variant.size)))]
+  ]) {
+    for (const value of values) select.add(new Option(value, value));
+  }
+  toggle.addEventListener('click', () => {
+    panel.hidden = !panel.hidden;
+    toggle.setAttribute('aria-expanded', String(!panel.hidden));
+  });
+  const refresh = productDiscovery($('#catalog-search'), products => {
+    const matches = products.filter(product =>
+      (!category.value || product.category === category.value) &&
+      (!brand.value || product.brand === brand.value) &&
+      (!size.value || product.variants.some(variant => variant.size === size.value)));
+    cards(grid, matches);
+    count.textContent = `${matches.length} ${matches.length === 1 ? 'produto' : 'produtos'} · seleção ilustrativa`;
+  });
+  panel.addEventListener('change', refresh);
 }
 
 function details() {
@@ -142,50 +170,48 @@ function details() {
     document.title = `Produto indisponível | ${appearance.name}`;
     return;
   }
-  if (state.productsChanged || product.id !== 'produto-1') {
-    const name = product.name;
-    document.title = `${name} | ${appearance.name}`;
-    const breadcrumb = $('.breadcrumb');
-    breadcrumb.lastChild.textContent = ` / ${name}`;
-    $('.product-info > .eyebrow').textContent = `${product.brand.toUpperCase()} / ${product.category === 'Sneakers' ? 'LIFESTYLE' : product.category.toUpperCase()}`;
-    setText('.product-info h1', name);
-    $('.detail-price').innerHTML = priceLabel(product);
-    setText('.description', product.description);
-    const stock = $('.stock-status');
-    stock.innerHTML = total(product) ? '<span class="availability-dot" aria-hidden="true"></span> Disponível · exemplo ilustrativo' : 'Esgotado';
-    const images = product.images.length ? product.images : [primaryImage(product)];
-    $('#main-visual').innerHTML = photo(images[0], name, false);
-    $('.thumbnails').innerHTML = images.map((image, index) => `<button class="thumb ${index === 0 ? 'selected' : ''}" type="button" data-product-image="${index}" aria-pressed="${index === 0}" aria-label="Imagem ${index + 1} de ${e(name)}">${photo(image)}</button>`).join('');
-    $('.thumbnails').addEventListener('click', event => {
-      const button = event.target.closest('[data-product-image]');
-      if (!button) return;
-      document.querySelectorAll('[data-product-image]').forEach(thumb => {
-        thumb.classList.toggle('selected', thumb === button);
-        thumb.setAttribute('aria-pressed', String(thumb === button));
-      });
-      $('#main-visual').innerHTML = photo(images[Number(button.dataset.productImage)], name, false);
+  const name = product.name;
+  document.title = `${name} | ${appearance.name}`;
+  const breadcrumb = $('.breadcrumb');
+  breadcrumb.lastChild.textContent = ` / ${name}`;
+  $('.product-info > .eyebrow').textContent = `${product.brand.toUpperCase()} / ${product.category === 'Tênis' ? 'LIFESTYLE' : product.category.toUpperCase()}`;
+  setText('.product-info h1', name);
+  $('.detail-price').innerHTML = priceLabel(product);
+  setText('.description', product.description);
+  const stock = $('.stock-status');
+  stock.innerHTML = total(product) ? '<span class="availability-dot" aria-hidden="true"></span> Disponível · exemplo ilustrativo' : 'Esgotado';
+  const images = product.images.length ? product.images : [primaryImage(product)];
+  $('#main-visual').innerHTML = photo(images[0], name, false);
+  $('.thumbnails').innerHTML = images.map((image, index) => `<button class="thumb ${index === 0 ? 'selected' : ''}" type="button" data-product-image="${index}" aria-pressed="${index === 0}" aria-label="Imagem ${index + 1} de ${e(name)}">${photo(image)}</button>`).join('');
+  $('.thumbnails').addEventListener('click', event => {
+    const button = event.target.closest('[data-product-image]');
+    if (!button) return;
+    document.querySelectorAll('[data-product-image]').forEach(thumb => {
+      thumb.classList.toggle('selected', thumb === button);
+      thumb.setAttribute('aria-pressed', String(thumb === button));
     });
-    const selected = product.variants.find(item => item.size === '40' && item.quantity > 0) || product.variants.find(item => item.quantity > 0);
-    const choices = $('.sizes > div');
-    choices.innerHTML = product.variants.map(item => `<button class="size ${item === selected ? 'selected' : ''}" type="button" ${item.quantity ? '' : 'disabled'} data-size-value="${e(item.size)}" aria-pressed="${item === selected}">${e(item.size)}</button>`).join('') || '<p class="muted">Sem numerações cadastradas.</p>';
-    const sizeLabel = item => item ? `BR ${item} · 1 unidade ilustrativa` : 'Sem estoque disponível';
-    setText('.purchase-summary strong', money.format(price(product)));
-    setText('.purchase-size', sizeLabel(selected?.size));
-    updateInterest([{ product, size: selected?.size }]);
-    choices.addEventListener('click', event => {
-      const button = event.target.closest('[data-size-value]');
-      if (!button || button.disabled) return;
-      choices.querySelectorAll('button').forEach(item => {
-        item.classList.toggle('selected', item === button);
-        item.setAttribute('aria-pressed', String(item === button));
-      });
-      setText('.purchase-size', sizeLabel(button.dataset.sizeValue));
-      updateInterest([{ product, size: button.dataset.sizeValue }]);
+    $('#main-visual').innerHTML = photo(images[Number(button.dataset.productImage)], name, false);
+  });
+  const selected = product.variants.find(item => item.size === '40' && item.quantity > 0) || product.variants.find(item => item.quantity > 0);
+  const choices = $('.sizes > div');
+  choices.innerHTML = product.variants.map(item => `<button class="size ${item === selected ? 'selected' : ''}" type="button" ${item.quantity ? '' : 'disabled'} data-size-value="${e(item.size)}" aria-pressed="${item === selected}">${e(item.size)}</button>`).join('') || '<p class="muted">Sem numerações cadastradas.</p>';
+  const sizeLabel = item => item ? `BR ${item} · 1 unidade ilustrativa` : 'Sem estoque disponível';
+  setText('.purchase-summary strong', money.format(price(product)));
+  setText('.purchase-size', sizeLabel(selected?.size));
+  updateInterest([{ product, size: selected?.size }]);
+  choices.addEventListener('click', event => {
+    const button = event.target.closest('[data-size-value]');
+    if (!button || button.disabled) return;
+    choices.querySelectorAll('button').forEach(item => {
+      item.classList.toggle('selected', item === button);
+      item.setAttribute('aria-pressed', String(item === button));
     });
-    setText('.product-info details:first-of-type p', product.description);
-    if (!total(product)) document.querySelectorAll('.purchase-buttons button').forEach(button => { button.disabled = true; });
-    cards($('.product-grid'), productList.filter(item => item.id !== product.id).slice(0, 4));
-  }
+    setText('.purchase-size', sizeLabel(button.dataset.sizeValue));
+    updateInterest([{ product, size: button.dataset.sizeValue }]);
+  });
+  setText('.product-info details:first-of-type p', product.description);
+  if (!total(product)) document.querySelectorAll('.purchase-buttons button').forEach(button => { button.disabled = true; });
+  cards($('.product-grid'), productList.filter(item => item.id !== product.id).slice(0, 4));
   if (appearance.delivery) setText('.product-info details:last-child p', appearance.delivery);
 }
 
@@ -213,17 +239,15 @@ function bag() {
     if (!entry) { item.remove(); return; }
     const { product, size } = entry;
     item.querySelectorAll('a').forEach(link => { link.href = productURL(product); });
-    if (!state.productsChanged) return;
     const [imageLink] = item.querySelectorAll('a');
     imageLink.innerHTML = photo(primaryImage(product), product.name);
     setTextIn(item, 'h2 a', product.name);
-    setTextIn(item, '.eyebrow', `${product.brand} / ${product.category === 'Sneakers' ? 'Lifestyle' : product.category}`);
+    setTextIn(item, '.eyebrow', `${product.brand} / ${product.category === 'Tênis' ? 'Lifestyle' : product.category}`);
     setTextIn(item, '.muted', `Numeração BR ${size} · ${money.format(price(product))} / un.`);
     setTextIn(item, '.item-subtotal strong', money.format(price(product)));
     const remove = $('.remove', item);
     remove.setAttribute('aria-label', `Remover ${product.name}, demonstração`);
   });
-  if (!state.productsChanged) return;
   updateInterest(bagItems);
   const amount = money.format(bagItems.reduce((sum, item) => sum + price(item.product), 0));
   const count = `${bagItems.length} ${bagItems.length === 1 ? 'item ilustrativo' : 'itens ilustrativos'}`;
@@ -247,7 +271,7 @@ function applyAppearance() {
   if (JSON.stringify(appearance.colors) !== JSON.stringify(originalAppearance.colors)) root.classList.add('shop-custom-colors');
   if (appearance.font !== originalAppearance.font) root.classList.add('shop-custom-font');
   const name = appearance.name;
-  document.title = document.title.replace(/VitraFlow$/, () => name);
+  document.title = document.title.replace(/RN Imports$/, () => name);
   document.querySelector('meta[name="description"]').content = appearance.description;
   document.querySelectorAll('.brand-logo').forEach(image => {
     image.alt = name;
@@ -282,7 +306,6 @@ function applyAppearance() {
   setText('.footer-column:last-child a', `Sobre ${name}`);
   setText('.footer-bottom > span', `© 2026 ${name}.`);
   setText('.store-description p', appearance.description);
-  if ($('.banner-edition')) setText('.banner-edition', `${name.toUpperCase()} / VOL. 01`);
   const contact = $('.store-contact-card');
   if (contact) {
     if (appearance.service) setTextIn(contact, '.muted', appearance.service);
@@ -299,17 +322,16 @@ function applyAppearance() {
 }
 
 function renderStorefront(customized) {
-  linkOriginalCards();
   if (customized) applyAppearance();
-  if (state.productsChanged) {
-    categoryChips();
-    document.querySelectorAll('.bag-count').forEach(badge => {
-      badge.textContent = bagItems.length;
-      if (badge.hasAttribute('aria-label')) badge.setAttribute('aria-label', `${bagItems.length} itens ilustrativos`);
-      if (badge.closest('.bag-link')) badge.closest('a').setAttribute('aria-label', `Ver sacola ilustrativa com ${bagItems.length} itens`);
-    });
+  document.querySelectorAll('.bag-count').forEach(badge => {
+    badge.textContent = bagItems.length;
+    if (badge.hasAttribute('aria-label')) badge.setAttribute('aria-label', `${bagItems.length} itens ilustrativos`);
+    if (badge.closest('.bag-link')) badge.closest('a').setAttribute('aria-label', `Ver sacola ilustrativa com ${bagItems.length} itens`);
+  });
+  if (page === 'index.html') {
+    home(customized);
+    homeProducts();
   }
-  if (page === 'index.html') home(customized);
   if (page === 'catalogo.html') catalog();
   if (page === 'produto.html') details();
   if (page === 'sacola.html') bag();

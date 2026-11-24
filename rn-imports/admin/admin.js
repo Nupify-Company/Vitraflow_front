@@ -1,4 +1,4 @@
-import { brands, categories } from '../js/mock-data.js';
+import { audiences, brands, categories } from '../js/mock-data.js';
 import { defaults, escape as e, imageURL, isLow, money, normalize, price, primaryImage, productError, readStore, stockAlerts, storageKey, total, writeStore } from '../js/store.js';
 import { photo, priceLabel } from '../js/shop-view.js';
 import { renderAppearance } from './appearance.js';
@@ -88,7 +88,7 @@ function overview(state) {
   ];
   const shortcuts = [
     ['plus', 'Cadastrar produto', '#products/new'], ['stock', 'Gerenciar estoque', '#stock'],
-    ['appearance', 'Personalizar vitrine', '#appearance'], ['shop', 'Visualizar catálogo', '../catalogo.html']
+    ['appearance', 'Personalizar vitrine', '#appearance'], ['shop', 'Visualizar vitrine', '../index.html']
   ];
   content.innerHTML = `${heading('Visão geral', 'Acompanhe seu catálogo e organize a operação da sua vitrine.', newProduct)}
     <section class="stats" aria-label="Indicadores do catálogo">${metrics.map(([key, label, value, detail]) => `<article class="metric"><div class="metric-title"><span class="tile-icon">${icon(key)}</span>${label}</div><strong>${value}</strong><small class="muted">${detail}</small></article>`).join('')}</section>
@@ -145,9 +145,9 @@ function productsPage() {
     if (order === 'old') products.reverse();
     if (order === 'asc' || order === 'desc') products.sort((a, b) => (price(a) - price(b)) * (order === 'asc' ? 1 : -1));
     content.querySelector('#product-count').textContent = `${products.length} produtos encontrados.`;
-    results.innerHTML = products.length ? `<table><thead><tr>${['Produto', 'Marca', 'Categoria', 'Preço', 'Estoque', 'Status', 'Ações'].map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>
-      ${products.map(product => `<tr><td><div class="table-product">${thumb(product)}<div><strong>${e(product.name)}</strong><small class="muted">${e(product.sku)}</small></div></div></td>
-        <td data-label="Marca">${e(product.brand)}</td><td data-label="Categoria">${e(product.category)}</td><td data-label="Preço"><span>${priceLabel(product)}</span></td>
+    results.innerHTML = products.length ? `<table><thead><tr>${['Produto', 'Marca', 'Tipo de produto', 'Preço', 'Estoque', 'Status', 'Ações'].map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>
+      ${products.map(product => `<tr><td><div class="table-product">${thumb(product)}<div><strong title="${e(product.name)}">${e(product.name)}</strong><small class="muted">${e(product.sku)}</small></div></div></td>
+        <td data-label="Marca">${e(product.brand)}</td><td data-label="Tipo de produto">${e(product.category)}</td><td data-label="Preço"><span>${priceLabel(product)}</span></td>
         <td data-label="Estoque">${total(product)}</td><td data-label="Status">${status(product)}</td><td data-label="Ações"><div class="actions">
         <a class="button compact" href="#products/${encodeURIComponent(product.id)}">Editar<span class="sr-only"> ${e(product.name)}</span></a>
         <button class="button compact" data-id="${e(product.id)}" data-product-action="toggle">${product.active ? 'Ocultar' : 'Reativar'}<span class="sr-only"> ${e(product.name)}</span></button>
@@ -195,7 +195,8 @@ function productForm(id) {
     content.innerHTML = heading('Produto indisponível', 'Este produto não está mais cadastrado.', '<a class="button" href="#products">Voltar aos produtos</a>');
     return;
   }
-  const product = existing || { name: '', brand: '', category: 'Sneakers', sku: '', description: '', price: '', promo: null, variants: [], images: [], active: true };
+  const product = existing || { name: '', brand: '', category: 'Tênis', audience: 'Unissex', sku: '', description: '', price: '', promo: null, variants: [], images: [], active: true };
+  const productTypes = categories.includes(product.category) ? categories : [...categories, product.category];
   const images = [...product.images];
   const editGroups = { basic: 'Dados', images: 'Imagens', stock: 'Estoque', display: 'Vitrine' };
   const editSection = (key, body) => existing
@@ -209,8 +210,10 @@ function productForm(id) {
       ${field('Nome do produto', 'name', product.name, 'required maxlength="120"')}
       ${field('Marca', 'brand', product.brand, 'required list="brand-options" maxlength="60"')}
       <datalist id="brand-options">${[...new Set([...brands, ...state.products.map(item => item.brand)])].map(brand => `<option value="${e(brand)}"></option>`).join('')}</datalist>
-      ${field('Categoria', 'category', product.category, 'required list="category-options" maxlength="60"')}
-      <datalist id="category-options">${[...new Set([...categories, ...state.products.map(item => item.category)])].map(category => `<option value="${e(category)}"></option>`).join('')}</datalist>
+      <label class="field">Público-alvo<select name="audience" required>${audiences.map(audience =>
+        `<option${audience === product.audience ? ' selected' : ''}>${e(audience)}</option>`).join('')}</select></label>
+      <label class="field">Tipo de produto<select name="category" required>${productTypes.map(category =>
+        `<option${category === product.category ? ' selected' : ''}>${e(category)}</option>`).join('')}</select></label>
       ${field('Código / SKU', 'sku', product.sku, 'required maxlength="60"')}
       ${field('Preço em R$', 'price', product.price, 'required type="number" min="0" step="0.01"')}
       ${field('Preço promocional em R$ (opcional)', 'promo', product.promo ?? '', 'type="number" min="0" step="0.01"')}
@@ -330,13 +333,15 @@ function productForm(id) {
     const data = new FormData(form);
     const next = {
       id: existing?.id || (globalThis.crypto?.randomUUID?.() ?? `produto-${Date.now()}-${Math.random().toString(36).slice(2)}`), createdAt: existing?.createdAt || new Date().toISOString(),
-      ...Object.fromEntries(['name', 'brand', 'category', 'sku', 'description'].map(key => [key, data.get(key).trim()])),
+      ...Object.fromEntries(['name', 'brand', 'audience', 'category', 'sku', 'description'].map(key => [key, data.get(key).trim()])),
       ...Object.fromEntries(['active', 'featured', 'bestseller', 'launch'].map(key => [key, data.has(key)])),
       price: form.elements.price.valueAsNumber, promo: form.elements.promo.value === '' && !form.elements.promo.validity.badInput ? null : form.elements.promo.valueAsNumber,
       images, variants: values()
     };
     const products = readStore().products;
-    const basicError = productError({ ...next, variants: [] }, products) || (!next.category ? 'Informe a categoria.' : '') ||
+    const basicError = productError({ ...next, variants: [] }, products) ||
+      (!audiences.includes(next.audience) ? 'Selecione o público-alvo.' : '') ||
+      (!productTypes.includes(next.category) ? 'Selecione o tipo de produto.' : '') ||
       (form.elements.price.validity.stepMismatch || form.elements.promo.validity.stepMismatch ? 'Use até duas casas decimais nos preços.' : '');
     const error = basicError || productError(next, products);
     const feedback = form.querySelector('#form-error');
@@ -417,7 +422,7 @@ function settingsPage(state) {
       <div class="field-grid">${field('Unidades por numeração', 'threshold', state.threshold, 'required type="number" min="0" step="1"')}</div>
       <div class="actions"><button type="submit" class="button primary">Salvar limite</button></div>
     </form>`, 'Uma numeração com quantidade igual ou inferior ao limite gera um alerta.')}
-    ${panel('Dados demonstrativos', '<button type="button" class="button danger" id="reset-data">Restaurar dados iniciais</button>', 'Esta ação redefine produtos, estoque e aparência neste navegador.')}
+    ${panel('Dados demonstrativos', '<button type="button" class="button danger" id="reset-data">Restaurar dados da demonstração</button>', 'Esta ação redefine produtos, estoque e aparência neste navegador.')}
     </div>`;
   content.querySelector('#threshold-form').addEventListener('submit', event => {
     event.preventDefault();

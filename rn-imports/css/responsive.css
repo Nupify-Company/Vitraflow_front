@@ -34,8 +34,7 @@
 }
 
 @media (min-width: 768px) {
-  .home-page .store-profile,
-  .home-page .discovery-bar { display: none; }
+  .home-page .store-profile { display: none; }
   html { scroll-padding-top: 155px; scroll-padding-bottom: 24px; }
   body, .has-purchase-dock { padding-bottom: 0; }
   .announcement { padding: 10px 15px; font-size: 9px; }
@@ -209,7 +208,7 @@
   .desktop-nav { gap: 22px; }
   .home-page .discovery-bar { display: block; }
   .home-page .store-profile { display: none; }
-  .discovery-inner { display: grid; grid-template-columns: minmax(180px, 1fr) auto; gap: 18px; align-items: center; padding-block: 24px; }
+  .discovery-inner { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: center; padding-block: 24px; }
   .category-chips { padding-block: 4px; }
   .category-chip { padding-inline: 13px; }
   .store-banner { min-height: 390px; margin-top: 28px; }
@@ -233,10 +232,6 @@
   .sneaker-list { column-gap: 20px; }
 }
 .mobile-nav a[aria-current]::before { background: var(--color-primary); }
-@media (min-width: 768px) and (max-width: 1023px) {
-  .discovery-inner { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .category-chips { justify-content: flex-start; }
-}
 
 /* Original brand artwork: preserve aspect ratio and PNG transparency. */
 .logo { flex-shrink: 0; }
@@ -301,8 +296,4 @@
     height: 195px;
     bottom: 7px;
   }
-}
-
-@media (min-width: 768px) {
-  .home-page .discovery-bar { display: none; }
 }

@@ -42,14 +42,6 @@
     button.addEventListener('click', () => showNote(button.dataset.note));
   });
 
-  document.addEventListener('click', event => {
-    const button = event.target.closest('[data-category]');
-    if (!button) return;
-    button.closest('nav').querySelectorAll('[data-category]').forEach(chip => {
-      chip.setAttribute('aria-pressed', String(chip === button));
-    });
-    showNote('Exemplo visual de categoria. Os produtos desta tela permanecem os mesmos.');
-  });
   document.querySelectorAll('[data-size-demo]').forEach(button => {
     button.addEventListener('click', () => showNote('Numerações ilustrativas. Esta composição usa o tamanho BR 40.'));
   });
@@ -127,5 +119,6 @@
     rail.scrollBy({ left: Number(button.dataset.direction) * step, behavior: scrollBehavior() });
   });
   document.addEventListener('vitraflow:preview-rendered', observeRails);
+  document.addEventListener('vitraflow:products-filtered', observeRails);
   observeRails();
 })();
