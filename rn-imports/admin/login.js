@@ -40,7 +40,7 @@ for (const form of [login, register]) {
       }
       signIn();
       form.reset();
-      location.replace('./index.html');
+      location.replace(new URL('./index.html', import.meta.url));
     } catch {
       showError('Não foi possível acessar o painel. Verifique se o navegador permite armazenamento local.');
     }

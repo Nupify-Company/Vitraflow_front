@@ -579,7 +579,7 @@ function profilePage({ profile }) {
       signOut();
       revision++;
       hasDraft = () => false;
-      location.replace('login.html');
+      location.replace(new URL('./login.html', import.meta.url));
     } catch {
       notify('Não foi possível sair. Verifique o armazenamento do navegador.');
     }
@@ -673,7 +673,7 @@ window.addEventListener('hashchange', async () => {
 });
 function redirectIfSignedOut() {
   if (!isSignedOut()) return false;
-  location.replace('login.html');
+  location.replace(new URL('./login.html', import.meta.url));
   return true;
 }
 window.addEventListener('pageshow', redirectIfSignedOut);
