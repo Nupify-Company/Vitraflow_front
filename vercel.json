@@ -3,7 +3,7 @@
   "framework": null,
   "installCommand": "",
   "buildCommand": "",
-  "outputDirectory": "rn-imports",
+  "outputDirectory": "protótipo",
   "cleanUrls": false,
   "redirects": [
     {
